@@ -22,6 +22,45 @@ To explore without an API key, hit **"Load demo curriculum"** on the New Audit s
 
 ---
 
+## What works now vs. what is simulated
+
+This prototype is a single HTML file. It runs entirely in the browser. Some features make live API calls — others are populated with demo data to show what the full product looks like at institutional scale. Here is the exact breakdown so there is no ambiguity.
+
+### ✅ Fully functional with an Anthropic API key
+
+| Feature | What happens |
+|---|---|
+| New Audit | Real API call. Paste or upload any curriculum, get a live scored audit with all findings, benchmarks, action plan, and lesson stubs |
+| Before / after diff (inline) | Real API call. Enable the compare toggle, paste a previous version, diff renders in the results tab with resolved/remaining/new issues |
+| Standalone diff screen | Real API call. Paste two curriculum versions, get independent scores, delta, and written analysis of what drove the change |
+| Lesson stub expand | Real API call. "Expand to full plan" generates a complete four-week unit plan on demand |
+| Load demo curriculum | No API call needed — pre-fills a sample 7th grade ELA curriculum so you can run a live audit immediately |
+| Session audit history | No API call — stores every audit you run during the session in a live timeline |
+
+### 🟡 Populated with demo data (no API call — shows the product vision)
+
+| Feature | What is shown | What it needs to be real |
+|---|---|---|
+| Dashboard KPI banner | Hardcoded school overview (avg 71, 2 below threshold) | Backend + account system with persisted audit data |
+| Dashboard curriculum cards | Clicking ELA/Math loads a pre-built sample result | Real audit history stored per user account |
+| Standards drift alert | Static amber banner | Webhook or scheduled job against state DOE change feeds |
+| Benchmarks screen | Hardcoded state median / national avg / top quartile estimates | Live integration with Common Core API and NAEP data |
+| Department view | Static teacher table with simulated scores and deltas | Multi-user account system with school-level data model |
+| Historical trend (simulated) | Three hardcoded timeline entries showing a score arc | Persisted audit records with date-stamped history |
+
+### 🔘 Export buttons (show toast, not yet wired)
+
+| Button | What it needs |
+|---|---|
+| Export PDF | PDF rendering service (Puppeteer, Playwright, or a PDF API) |
+| Copy share link | Backend URL generation + audit result persistence |
+| Push to Notion | Notion API token + target page ID (~2 hours to implement) |
+| Export department report | Backend PDF generation with multi-teacher data |
+
+**Bottom line:** Run a live audit, use the diff engine, expand lesson stubs — those all work today with an API key. The dashboard and department views show the institutional product vision with representative data.
+
+---
+
 ## Features
 
 ### 1. Curriculum health audit
@@ -232,6 +271,187 @@ The primary conversion hypothesis: a teacher who runs 3+ audits per semester and
 | This product | Structured scoring + diff + benchmarks + stubs + retention loop |
 
 The moat is not the AI — any competitor can prompt Claude or GPT for curriculum feedback. The moat is the validated rubric, the calibration dataset from real student outcomes, and the institutional data layer built over time.
+
+---
+
+## From prototype to operating system — the full product vision
+
+This prototype proves the core thesis works: AI can audit a curriculum, score it against national benchmarks, identify specific gaps, generate actionable stubs, and show improvement over time. That is the seed.
+
+What follows is the roadmap to turn CurriculumOS into a full operating system for curriculum quality — the platform that sits at the centre of how schools plan, iterate, and improve instruction at every level.
+
+---
+
+### Phase 1 — Harden the core *(0–6 months)*
+
+The single-file prototype becomes a real application with an account system and persistent data.
+
+**Backend infrastructure**
+- User authentication (teacher, admin, district roles)
+- Database layer storing audit results, history, lesson stubs, and implementation tracking per user
+- API proxy server — all Anthropic calls move server-side, API key never exposed client-side
+- PDF export service using Puppeteer or Playwright
+- Shareable audit links with unique URLs
+
+**Standards data layer**
+- Integrate Common Core State Standards API for authoritative benchmark data
+- Pull annual NAEP achievement level descriptors by grade and subject
+- Map ACT/SAT skill domain frameworks for grades 9–12
+- Build a versioned standards database that updates when frameworks are revised
+- Replace the AI benchmark proxy entirely — this is the trust foundation the product requires
+
+**File ingestion**
+- Server-side PDF text extraction
+- DOCX reader for lesson plan documents
+- SCORM package parser for EdTech company content
+- Video transcript ingestion (for course-based curricula)
+
+---
+
+### Phase 2 — Institutional product *(6–12 months)*
+
+The product grows from individual teacher utility to a school and district operating system.
+
+**Multi-user school workspace**
+- Department dashboards become live, not demo — fed by real audit data from every teacher in the school
+- Admin view with drill-down from school → department → individual curriculum
+- Audit scheduling — set a cadence and the system reminds teachers when a re-audit is due
+- Curriculum version control — every revision stored, every diff available, full change history
+
+**LMS integration**
+- Canvas integration — audit curricula directly from course shell
+- Google Classroom connector — pull course content for audit without copy-paste
+- Moodle and Blackboard support for higher ed
+- SCORM file upload and analysis for EdTech companies and test prep firms
+
+**Collaborative review workflows**
+- Department head review queue — teacher submits audit, department head approves or flags
+- Comment and annotation layer on audit findings
+- Curriculum improvement tasks assigned to teachers with due dates and status tracking
+- Principal sign-off workflow before curriculum is marked approved
+
+**Notification and drift detection**
+- Automated alerts when state standards update — shows which of your curricula are affected and by how much
+- Scheduled re-audit reminders at configurable intervals
+- Score regression alerts — if a curriculum's score drops after a revision, flag it immediately
+
+---
+
+### Phase 3 — Intelligence layer *(12–24 months)*
+
+The platform accumulates data across schools and begins to generate insights that no individual school could produce alone.
+
+**Calibration flywheel**
+- Partner with schools to collect real student outcome data (assessment results, SBAC scores, NAEP participation)
+- Build a correlation model: does audit score predict student performance?
+- Target Pearson r > 0.6 between curriculum health score and standardised assessment outcomes
+- Each school that contributes data improves accuracy for every school on the platform
+- This is the moat — it cannot be replicated by a competitor starting from zero
+
+**Peer benchmarking (real data)**
+- Replace estimated benchmarks with actual anonymised data from schools on the platform
+- "Schools similar to yours in California with a Title I designation average 68 on this subject" — not an estimate
+- Subject-specific benchmark breakdowns: your ELA score vs. comparable schools by grade band, geography, school type
+- Opt-in ranking for schools that want competitive visibility
+
+**Predictive gap detection**
+- Trend analysis: if a curriculum's score has declined for two consecutive semesters, surface a predictive alert before it becomes a problem
+- Cross-subject gap mapping: students who are weak in data literacy in math are also likely weak in evidence-based writing in ELA — the system surfaces cross-department patterns
+- Grade band continuity analysis: track whether what is taught in grade 6 adequately prepares students for grade 7 standards
+
+**AI curriculum co-pilot**
+- Interactive audit refinement: ask the AI why a specific finding was flagged and get a detailed explanation with standards citations
+- "What if" scenario planning: "If I add these three topics, what would my estimated score be?"
+- Curriculum generation assistance: given a gap list and grade level, draft a full unit from scratch — not just a week-one stub
+- Alignment checker: paste a lesson plan and a standards list, get an automated alignment map
+
+---
+
+### Phase 4 — Market expansion *(24+ months)*
+
+The platform extends beyond K-12 to adjacent markets with the same core problem.
+
+**Higher education**
+- Course audit for university departments
+- Accreditation alignment checking (regional accreditors, ABET, AACSB, etc.)
+- Curriculum mapping across a degree program — does the sequence of courses build skills coherently?
+
+**EdTech companies and test prep firms**
+- The original thesis: stress-test course content before it reaches real learners
+- Upload a full course (video transcripts, assessments, reading materials)
+- Synthetic learner simulation against defined learner profiles
+- Audit against certification exam frameworks (CompTIA, AWS, SHRM, etc.)
+- Before/after scoring across product iterations — replaces expensive A/B testing on real users
+
+**Corporate learning and development**
+- Audit internal training content against current skills frameworks (LinkedIn Skills Graph, O*NET)
+- Flag obsolete compliance training content
+- Benchmark L&D curricula against industry peer data
+- Skills gap analysis: map training content to the skills the business has defined as strategic
+
+**International expansion**
+- Support for non-US standards frameworks (UK National Curriculum, IB Programme, Australian Curriculum)
+- Multi-language curriculum ingestion
+- Country-specific benchmark data partnerships
+
+---
+
+### Technology architecture at scale
+
+When the prototype graduates to a production platform, the architecture looks like this:
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   CurriculumOS Platform              │
+├─────────────┬───────────────┬────────────────────────┤
+│  Web app    │  Mobile app   │  LMS plugins           │
+│  (React)    │  (React       │  (Canvas, Classroom,   │
+│             │   Native)     │   Moodle, Blackboard)  │
+├─────────────┴───────────────┴────────────────────────┤
+│                    API Gateway                        │
+├──────────────┬──────────────┬────────────────────────┤
+│  Audit       │  Standards   │  User &                │
+│  Service     │  Service     │  Account Service       │
+│  (Claude     │  (Common     │  (Auth, roles,         │
+│   API proxy) │   Core API,  │   billing)             │
+│              │   NAEP, DOE) │                        │
+├──────────────┼──────────────┼────────────────────────┤
+│  File        │  Benchmark   │  Notification          │
+│  Ingestion   │  Intelligence│  Service               │
+│  Service     │  Service     │  (drift alerts,        │
+│  (PDF, DOCX, │  (calibration│   reminders)           │
+│   SCORM)     │   model)     │                        │
+├──────────────┴──────────────┴────────────────────────┤
+│              Data layer                               │
+│  PostgreSQL (audit records, user data, history)       │
+│  Vector DB (curriculum embeddings for similarity)     │
+│  S3 / blob storage (uploaded files)                   │
+│  Redis (session cache, rate limiting)                 │
+└─────────────────────────────────────────────────────┘
+```
+
+**Key engineering decisions at scale:**
+- All AI calls proxied server-side — no client-side API key exposure
+- Curriculum content stored as embeddings to enable similarity search ("find me curricula like this one")
+- Standards data versioned in the database — audits are reproducible against the exact standards version active at audit time
+- Multi-tenant data model with strict school-level isolation — no cross-school data leakage
+- SOC 2 Type II certification path begins at Phase 2, required for district contracts
+
+---
+
+### What needs to happen before this is a real company
+
+In order of priority:
+
+1. **Run the parallel validation pilot.** One school. One semester. Real student outcomes alongside synthetic audit scores. Without a correlation number, every claim about predictive accuracy is a hypothesis. This is the most important thing.
+
+2. **Hire a learning scientist.** Not an advisor — a full-time hire or a very engaged fractional role. They validate the rubric, give the product academic credibility, and neutralise the internal skeptic at district procurement. This is the hire that unlocks the School and District tiers.
+
+3. **Get 10 paying teachers before building anything else.** $49/month. Real credit card. Real curriculum. The question is not whether teachers find it interesting — it is whether they pay for it and come back. Validate the retention loop before scaling the infrastructure.
+
+4. **Legal review.** FERPA and COPPA before any student data enters the system. Data Processing Agreements before the first district call. This is not optional and not last-minute work.
+
+5. **Standards API integration.** Replace the AI benchmark proxy with authoritative data. This is the technical work that makes the product defensible to a curriculum director asking "where do these benchmarks come from?"
 
 ---
 
