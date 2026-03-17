@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CurriculumOS — Audit Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f2;--surface:#ffffff;--surface2:#f0efe9;--surface3:#e8e6de;
+  --ink:#1a1916;--ink2:#6b6a63;--ink3:#a8a79f;--ink4:#d4d3cc;
+  --accent:#2d5a3d;--accent-light:#e8f0ea;--accent-mid:#4a8c60;
+  --red:#c0392b;--red-light:#fdf0ee;--amber:#b7600a;--amber-light:#fef5ec;
+  --blue:#1e4d8c;--blue-light:#eef3fb;
+  --font:'DM Sans',sans-serif;--serif:'Instrument Serif',serif;--mono:'DM Mono',monospace;
+  --r:10px;--r2:14px;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* LAYOUT */
+.shell{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--ink4);padding:0;flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.main{flex:1;padding:36px 40px 80px;max-width:900px}
+
+/* SIDEBAR */
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid var(--ink4)}
+.sb-logo-mark{font-family:var(--serif);font-size:18px;color:var(--ink);letter-spacing:-0.3px}
+.sb-logo-mark span{color:var(--accent)}
+.sb-tagline{font-size:10px;color:var(--ink3);font-family:var(--mono);margin-top:2px;letter-spacing:.5px}
+.sb-nav{padding:14px 10px;flex:1}
+.sb-section{font-size:9px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink3);font-family:var(--mono);padding:0 10px;margin-bottom:5px;margin-top:14px}
+.sb-section:first-child{margin-top:0}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;cursor:pointer;transition:all .15s;font-size:12px;color:var(--ink2);margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:var(--font)}
+.nav-item:hover{background:var(--surface2);color:var(--ink)}
+.nav-item.active{background:var(--accent-light);color:var(--accent);font-weight:500}
+.nav-icon{width:15px;height:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.sb-foot{padding:14px 20px;border-top:1px solid var(--ink4)}
+.sb-kpi{font-size:10px;color:var(--ink3);font-family:var(--mono);margin-bottom:3px}
+.sb-kpi-val{font-size:20px;font-weight:300;color:var(--ink);letter-spacing:-0.5px}
+.badge-new{display:inline-block;padding:1px 6px;background:var(--accent);color:#fff;border-radius:3px;font-size:9px;font-weight:500;font-family:var(--mono);margin-left:auto}
+
+/* SCREENS */
+.screen{display:none}.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.screen.active{animation:fadeUp .3s ease}
+
+/* COMMON */
+.page-head{margin-bottom:28px}
+.page-title{font-family:var(--serif);font-size:30px;color:var(--ink);letter-spacing:-0.5px;line-height:1.2;margin-bottom:5px}
+.page-sub{font-size:13px;color:var(--ink2);line-height:1.6}
+.label{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);font-family:var(--mono);margin-bottom:8px}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--ink4);border-radius:var(--r2);padding:20px 22px;margin-bottom:14px}
+.card-sm{background:var(--surface);border:1px solid var(--ink4);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+
+/* INPUTS */
+input[type=text],input[type=password],textarea,select{width:100%;background:var(--surface2);border:1px solid var(--ink4);border-radius:var(--r);padding:10px 13px;color:var(--ink);font-family:var(--font);font-size:13px;outline:none;transition:border-color .2s;resize:none;-webkit-appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+input::placeholder,textarea::placeholder{color:var(--ink3)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--r);border:1px solid transparent;font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-primary:hover{background:#234a31}
+.btn-primary:disabled{background:var(--ink4);border-color:var(--ink4);color:var(--ink3);cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--ink2);border-color:var(--ink4)}.btn-ghost:hover{background:var(--surface2);color:var(--ink)}
+.btn-danger{background:var(--red-light);color:var(--red);border-color:#f0c4bf}.btn-danger:hover{background:#f8d8d4}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+
+/* API BANNER */
+.api-bar{background:var(--blue-light);border:1px solid #c5d6f0;border-radius:var(--r);padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.api-bar label{font-size:11px;color:var(--blue);font-family:var(--mono);white-space:nowrap}
+.api-bar input{flex:1;min-width:180px;background:#fff;border-color:#c5d6f0;font-family:var(--mono);font-size:11px;padding:7px 10px}
+.api-note{font-size:10px;color:var(--ink3);white-space:nowrap}
+
+/* LOADING */
+.loading{display:flex;align-items:center;gap:12px;padding:18px;color:var(--ink2);font-size:13px}
+.ldots{display:flex;gap:4px}
+.ldot{width:4px;height:4px;border-radius:50%;background:var(--accent);animation:pulse 1.4s ease infinite}
+.ldot:nth-child(2){animation-delay:.2s}.ldot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* SCORE RING */
+.score-hero{display:flex;align-items:center;gap:24px;padding:22px 24px;background:var(--surface);border:1px solid var(--ink4);border-radius:var(--r2);margin-bottom:14px}
+.score-num{font-size:60px;font-weight:300;line-height:1;letter-spacing:-3px;font-family:var(--serif)}
+.score-num.hi{color:var(--accent)}.score-num.mid{color:var(--amber)}.score-num.lo{color:var(--red)}
+.score-meta{flex:1}
+.score-track{height:4px;background:var(--ink4);border-radius:2px;overflow:hidden;margin:8px 0}
+.score-fill{height:100%;border-radius:2px;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+.score-benchmarks{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);font-family:var(--mono)}
+
+/* DELTA BADGE */
+.delta{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;font-family:var(--mono)}
+.delta-up{background:var(--accent-light);color:var(--accent)}
+.delta-down{background:var(--red-light);color:var(--red)}
+.delta-flat{background:var(--surface2);color:var(--ink2)}
+
+/* GRID LAYOUTS */
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+
+/* STAT CELLS */
+.stat{background:var(--surface2);border-radius:var(--r);padding:14px 16px}
+.stat-label{font-size:10px;color:var(--ink3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.stat-val{font-size:26px;font-weight:300;letter-spacing:-1px;color:var(--ink)}
+.stat-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+
+/* AUDIT RESULT LISTS */
+.audit-section{margin-bottom:18px}
+.audit-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.audit-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.audit-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.6px;font-family:var(--mono)}
+.audit-list{list-style:none;padding:0}
+.audit-list li{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--ink4);font-size:12px;color:var(--ink2);line-height:1.5}
+.audit-list li:last-child{border-bottom:none}
+.ali-marker{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:6px}
+
+/* DIFF VIEW */
+.diff-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--ink4);border-radius:var(--r2);overflow:hidden;margin-bottom:14px}
+.diff-col{padding:16px 18px}
+.diff-col:first-child{border-right:1px solid var(--ink4);background:#fdf5f5}
+.diff-col:last-child{background:#f5fdf7}
+.diff-label{font-size:10px;font-family:var(--mono);font-weight:500;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.diff-label.old{color:var(--red)}.diff-label.new{color:var(--accent)}
+.diff-item{font-size:12px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);color:var(--ink2);line-height:1.4}
+.diff-item:last-child{border-bottom:none}
+.diff-item.resolved{color:var(--accent);text-decoration:line-through;opacity:.6}
+.diff-item.added{color:var(--accent)}
+.diff-item.unchanged{color:var(--ink3)}
+
+/* BENCHMARK BAR */
+.bench-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.bench-label{font-size:11px;color:var(--ink2);min-width:100px}
+.bench-track{flex:1;height:6px;background:var(--ink4);border-radius:3px;position:relative}
+.bench-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bench-marker{position:absolute;top:-4px;width:2px;height:14px;background:var(--ink);border-radius:1px}
+.bench-val{font-size:11px;font-family:var(--mono);min-width:28px;text-align:right;color:var(--ink2)}
+
+/* LESSON STUB */
+.stub-card{background:var(--surface);border:1px solid var(--ink4);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.stub-week{font-size:9px;font-family:var(--mono);color:var(--ink3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.stub-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.stub-items{list-style:none;padding:0}
+.stub-items li{font-size:11px;color:var(--ink2);padding:3px 0 3px 14px;position:relative;line-height:1.45}
+.stub-items li::before{content:'·';position:absolute;left:4px;color:var(--ink3)}
+
+/* HISTORY TIMELINE */
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--ink4)}
+.tl-item{position:relative;margin-bottom:18px}
+.tl-dot{position:absolute;left:-17px;top:4px;width:9px;height:9px;border-radius:50%;border:2px solid var(--surface);background:var(--accent)}
+.tl-date{font-size:10px;font-family:var(--mono);color:var(--ink3);margin-bottom:3px}
+.tl-content{background:var(--surface);border:1px solid var(--ink4);border-radius:var(--r);padding:12px 14px}
+.tl-score{font-size:20px;font-weight:300;color:var(--ink);letter-spacing:-0.5px}
+.tl-name{font-size:12px;color:var(--ink2);margin-bottom:5px}
+
+/* METRICS TABLE */
+.metrics-table{width:100%;border-collapse:collapse}
+.metrics-table th{font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.6px;color:var(--ink3);text-align:left;padding:8px 12px;border-bottom:1px solid var(--ink4);font-weight:400}
+.metrics-table td{padding:10px 12px;border-bottom:1px solid var(--ink4);font-size:12px;color:var(--ink2)}
+.metrics-table tr:last-child td{border-bottom:none}
+.metrics-table tr:hover td{background:var(--surface2)}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.price-card{background:var(--surface);border:1px solid var(--ink4);border-radius:var(--r2);padding:20px 18px}
+.price-card.featured{border-color:var(--accent);border-width:2px}
+.price-tier{font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.8px;color:var(--ink3);margin-bottom:8px}
+.price-num{font-size:32px;font-weight:300;color:var(--ink);letter-spacing:-1px;line-height:1}
+.price-per{font-size:11px;color:var(--ink3);margin-bottom:14px}
+.price-features{list-style:none;padding:0}
+.price-features li{font-size:11px;color:var(--ink2);padding:4px 0;display:flex;align-items:center;gap:7px}
+.pf-check{width:12px;height:12px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pf-x{width:12px;height:12px;border-radius:50%;background:var(--surface2);color:var(--ink4);font-size:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* KPI DASHBOARD */
+.kpi-banner{background:var(--accent);color:#fff;border-radius:var(--r2);padding:18px 22px;margin-bottom:20px}
+.kpi-title{font-size:11px;font-family:var(--mono);letter-spacing:.5px;opacity:.7;margin-bottom:4px}
+.kpi-headline{font-family:var(--serif);font-size:22px;letter-spacing:-.3px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.15);border-radius:8px;overflow:hidden;margin-top:14px}
+.kpi-cell{background:rgba(255,255,255,.08);padding:12px 14px}
+.kpi-cell-label{font-size:9px;font-family:var(--mono);opacity:.6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi-cell-val{font-size:20px;font-weight:300;letter-spacing:-.5px}
+.kpi-cell-sub{font-size:10px;opacity:.6;margin-top:2px}
+
+/* UPLOAD */
+.upload-zone{border:1.5px dashed var(--ink4);border-radius:var(--r);padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.upload-zone:hover{border-color:var(--accent);background:var(--accent-light)}
+.uz-icon{font-size:22px;color:var(--ink3);margin-bottom:6px}
+.uz-title{font-size:13px;color:var(--ink2);margin-bottom:2px}
+.uz-sub{font-size:11px;color:var(--ink3)}
+.file-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.ftag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:var(--surface2);border:1px solid var(--ink4);border-radius:20px;font-size:11px;color:var(--ink2)}
+.ftag-x{cursor:pointer;color:var(--ink3);font-size:13px}.ftag-x:hover{color:var(--red)}
+
+/* NOTICE */
+.notice{border-radius:var(--r);padding:12px 14px;margin-bottom:16px;font-size:12px;line-height:1.55}
+.notice-warn{background:var(--amber-light);border:1px solid #f0d0b0;color:#7a4008}
+.notice-info{background:var(--blue-light);border:1px solid #c5d6f0;color:var(--blue)}
+.notice-success{background:var(--accent-light);border:1px solid #b8d4c0;color:var(--accent)}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--ink4);margin-bottom:20px}
+.tab{padding:9px 16px;font-size:12px;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-family:var(--font)}
+.tab:hover{color:var(--ink2)}.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:500}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* FIELD */
+.field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.field-row-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.field-row-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;color:var(--ink2)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--ink4);margin:22px 0}
+
+/* TOOLTIP-LIKE ALERT */
+.alert-strip{padding:10px 14px;border-radius:var(--r);display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:12px;line-height:1.55}
+.alert-strip.red{background:var(--red-light);border:1px solid #f0c4bf;color:var(--red)}
+.alert-strip.green{background:var(--accent-light);border:1px solid #b8d4c0;color:var(--accent)}
+.alert-strip.amber{background:var(--amber-light);border:1px solid #f0d0b0;color:var(--amber)}
+.alert-icon{flex-shrink:0;font-size:14px;margin-top:0}
+
+/* DEPARTMENT TABLE */
+.dept-row{display:grid;grid-template-columns:minmax(0,2fr) 80px 80px 80px 120px;gap:0;padding:11px 14px;border-bottom:1px solid var(--ink4);align-items:center}
+.dept-row:hover{background:var(--surface2)}
+.dept-header{background:var(--surface2);border-radius:var(--r) var(--r) 0 0}
+.dept-header .dept-col{font-size:10px;font-family:var(--mono);color:var(--ink3);text-transform:uppercase;letter-spacing:.5px}
+.dept-col{font-size:12px;color:var(--ink2)}
+.dept-col.name{font-size:13px;color:var(--ink);font-weight:500}
+.score-pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-family:var(--mono);font-weight:500}
+.sp-hi{background:var(--accent-light);color:var(--accent)}
+.sp-mid{background:var(--amber-light);color:var(--amber)}
+.sp-lo{background:var(--red-light);color:var(--red)}
+
+/* SECTION LABEL */
+.sec-label{font-size:10px;font-family:var(--mono);letter-spacing:.8px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px}
+
+/* PROGRESS TAG */
+.prog-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-family:var(--mono)}
+.pt-todo{background:var(--surface2);color:var(--ink3)}
+.pt-doing{background:var(--amber-light);color:var(--amber)}
+.pt-done{background:var(--accent-light);color:var(--accent)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--r);font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+
+/* HERO CTA */
+.hero-cta{background:var(--surface);border:1px solid var(--ink4);border-radius:var(--r2);padding:30px 28px;text-align:center;margin-bottom:20px}
+.hc-icon{font-size:32px;margin-bottom:12px;color:var(--ink3)}
+.hc-title{font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:6px;letter-spacing:-.3px}
+.hc-sub{font-size:13px;color:var(--ink2);margin-bottom:18px;line-height:1.6}
+
+/* EXPORT BTN */
+.export-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">Curriculum<span>OS</span></div>
+    <div class="sb-tagline">AUDIT PLATFORM v2.0</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Workspace</div>
+    <button class="nav-item active" onclick="nav('dashboard')">
+      <span class="nav-icon">◈</span> Dashboard
+    </button>
+    <button class="nav-item" onclick="nav('audit')">
+      <span class="nav-icon">◎</span> New Audit
+    </button>
+    <button class="nav-item" onclick="nav('history')">
+      <span class="nav-icon">◷</span> Audit History
+    </button>
+    <button class="nav-item" onclick="nav('diff')">
+      <span class="nav-icon">⇄</span> Compare / Diff
+    </button>
+    <div class="sb-section">Insights</div>
+    <button class="nav-item" onclick="nav('lessons')">
+      <span class="nav-icon">◉</span> Lesson Stubs
+    </button>
+    <button class="nav-item" onclick="nav('benchmarks')">
+      <span class="nav-icon">◐</span> Benchmarks
+    </button>
+    <button class="nav-item" onclick="nav('department')">
+      <span class="nav-icon">⊞</span> Department View
+    </button>
+    <div class="sb-section">Settings</div>
+    <button class="nav-item" onclick="nav('pricing')">
+      <span class="nav-icon">◇</span> Plans & Pricing
+    </button>
+    <button class="nav-item" onclick="nav('metrics')">
+      <span class="nav-icon">◫</span> Product Metrics
+    </button>
+  </div>
+  <div class="sb-foot">
+    <div class="sb-kpi">audits this session</div>
+    <div class="sb-kpi-val" id="audit-count">0</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- API BAR (persistent) -->
+<div class="api-bar">
+  <label>API KEY</label>
+  <input type="password" id="apikey" placeholder="sk-ant-..." />
+  <span class="api-note">stays in browser · never logged</span>
+</div>
+
+<!-- SCREEN: DASHBOARD -->
+<div class="screen active" id="scr-dashboard">
+  <div class="page-head">
+    <div class="page-title">Good morning.</div>
+    <div class="page-sub">Your curriculum health overview. Track progress, spot drift, act on gaps.</div>
+  </div>
+  <div class="kpi-banner">
+    <div class="kpi-title">SCHOOL HEALTH OVERVIEW · 2026</div>
+    <div class="kpi-headline">3 curricula audited · avg score 71 · 2 below threshold</div>
+    <div class="kpi-grid">
+      <div class="kpi-cell">
+        <div class="kpi-cell-label">Avg Score</div>
+        <div class="kpi-cell-val">71</div>
+        <div class="kpi-cell-sub">+4 vs last quarter</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-cell-label">Below 70</div>
+        <div class="kpi-cell-val">2</div>
+        <div class="kpi-cell-sub">need attention</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-cell-label">Gaps Closed</div>
+        <div class="kpi-cell-val">7</div>
+        <div class="kpi-cell-sub">since last audit</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-cell-label">90-day Target</div>
+        <div class="kpi-cell-val">80</div>
+        <div class="kpi-cell-sub">avg health score</div>
+      </div>
+    </div>
+  </div>
+  <div class="alert-strip amber">
+    <span class="alert-icon">⚑</span>
+    <span><strong>Standards drift detected:</strong> California updated 6–8 Math frameworks on Jan 15, 2026. 2 of your curricula may be affected. <span style="text-decoration:underline;cursor:pointer" onclick="nav('audit')">Run re-audit →</span></span>
+  </div>
+  <div class="grid-3">
+    <div class="card" style="cursor:pointer" onclick="loadSampleResult('ela')">
+      <div class="label">English Language Arts · 6–8</div>
+      <div style="font-size:28px;font-weight:300;color:var(--accent);letter-spacing:-1px;margin:8px 0 4px">78</div>
+      <div class="score-track"><div class="score-fill" style="width:78%;background:var(--accent-mid)"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-top:6px">
+        <span>Last audit: Jan 10</span><span class="delta delta-up">+6</span>
+      </div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="loadSampleResult('math')">
+      <div class="label">Mathematics · 6–8</div>
+      <div style="font-size:28px;font-weight:300;color:var(--amber);letter-spacing:-1px;margin:8px 0 4px">64</div>
+      <div class="score-track"><div class="score-fill" style="width:64%;background:var(--amber)"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-top:6px">
+        <span>Last audit: Dec 20</span><span class="delta delta-down">−3</span>
+      </div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="nav('audit')">
+      <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-align:center;border:1.5px dashed var(--ink4);border-radius:var(--r);gap:8px">
+        <div style="font-size:22px;color:var(--ink4)">+</div>
+        <div style="font-size:12px;color:var(--ink3)">Audit new curriculum</div>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="label">Quick actions</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-primary" onclick="nav('audit')">Run new audit →</button>
+    <button class="btn btn-ghost" onclick="nav('diff')">Compare two versions</button>
+    <button class="btn btn-ghost" onclick="nav('department')">View department health</button>
+    <button class="btn btn-ghost" onclick="nav('lessons')">Browse lesson stubs</button>
+  </div>
+</div>
+
+<!-- SCREEN: NEW AUDIT -->
+<div class="screen" id="scr-audit">
+  <div class="page-head">
+    <div class="page-title">New curriculum audit</div>
+    <div class="page-sub">Configure learner context, upload or paste your curriculum, and get a full audit in under 60 seconds.</div>
+  </div>
+  <div class="notice notice-warn">
+    <strong>Prototype disclaimer:</strong> Benchmarks are derived from Claude's training knowledge of Common Core, NAEP, and state frameworks — not a live standards API. Treat findings as an AI-informed first draft. See the validation roadmap in Plans & Pricing for the path to a certified product.
+  </div>
+
+  <div id="audit-form">
+    <div class="card">
+      <div class="sec-label">Learner profile</div>
+      <div class="field-row-4">
+        <div class="field"><label>Grade band</label>
+          <select id="grade"><option value="K-2">K–2 (ages 5–7)</option><option value="3-5">3–5 (ages 8–10)</option><option value="6-8" selected>6–8 (ages 11–13)</option><option value="9-12">9–12 (ages 14–18)</option><option value="College">College</option></select></div>
+        <div class="field"><label>Subject</label>
+          <select id="subject"><option value="Math">Mathematics</option><option value="Science">Science</option><option value="English Language Arts" selected>English Language Arts</option><option value="Social Studies">Social Studies</option><option value="Computer Science">Computer Science</option><option value="Health">Health & PE</option></select></div>
+        <div class="field"><label>State / region</label><input type="text" id="state" placeholder="e.g. California" /></div>
+        <div class="field"><label>School type</label>
+          <select id="stype"><option>Public</option><option>Charter</option><option>Private</option><option>Homeschool</option></select></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-label">Curriculum input</div>
+      <div class="upload-zone" onclick="document.getElementById('ufile').click()">
+        <div class="uz-icon">↑</div>
+        <div class="uz-title">Drop files or click to upload</div>
+        <div class="uz-sub">PDF · DOCX · TXT · CSV — any format accepted</div>
+      </div>
+      <input type="file" id="ufile" multiple style="display:none" onchange="handleFiles(this)" />
+      <div class="file-tags" id="filetags"></div>
+      <textarea id="currtext" rows="8" placeholder="Paste curriculum here — lesson plans, syllabi, learning objectives, unit outlines, reading lists, assessment descriptions...&#10;&#10;The more detail provided, the more specific the audit findings."></textarea>
+      <div style="display:flex;justify-content:space-between;margin-top:5px">
+        <span style="font-size:11px;color:var(--ink3)">Any format · structured or unstructured</span>
+        <span style="font-size:11px;color:var(--ink3);font-family:var(--mono)" id="charcount">0 chars</span>
+      </div>
+    </div>
+    <div class="card" id="compare-toggle-card">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--ink)">Compare with previous version?</div>
+          <div style="font-size:11px;color:var(--ink2);margin-top:2px">Enable to run a before/after diff and see exactly what improved</div>
+        </div>
+        <label style="position:relative;display:inline-block;width:38px;height:22px;cursor:pointer">
+          <input type="checkbox" id="compare-toggle" style="opacity:0;width:0;height:0" onchange="toggleCompare(this)">
+          <span id="toggle-track" style="position:absolute;inset:0;background:var(--ink4);border-radius:11px;transition:.2s"></span>
+          <span id="toggle-thumb" style="position:absolute;left:3px;top:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.2s"></span>
+        </label>
+      </div>
+      <div id="prev-upload" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--ink4)">
+        <div style="font-size:12px;color:var(--ink2);margin-bottom:8px">Previous curriculum version (to compare against)</div>
+        <textarea id="prevtext" rows="4" placeholder="Paste your previous curriculum version here, or select from history above..."></textarea>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="runAudit()">Run audit →</button>
+      <button class="btn btn-ghost" onclick="loadDemo()">Load demo curriculum</button>
+    </div>
+    <div class="loading" id="audit-loading" style="display:none">
+      <div class="ldots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+      <span id="loading-label">Analyzing against 2026 national benchmarks...</span>
+    </div>
+    <div class="alert-strip red" id="audit-error" style="display:none">
+      <span class="alert-icon">!</span><span id="error-msg">Error message</span>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="audit-results" style="display:none">
+    <div class="score-hero">
+      <div>
+        <div class="score-num hi" id="res-score">—</div>
+        <div style="font-size:11px;color:var(--ink2);margin-top:3px">/ 100</div>
+      </div>
+      <div class="score-meta">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          <div style="font-size:15px;font-weight:500;color:var(--ink)" id="res-subject-label">Curriculum</div>
+          <span class="delta" id="res-delta" style="display:none"></span>
+        </div>
+        <div class="score-benchmarks"><span>0 — weak</span><span style="color:var(--amber)">65 — state median</span><span style="color:var(--accent)">80 — top quartile</span></div>
+        <div class="score-track" style="margin:5px 0"><div class="score-fill" id="res-bar" style="width:0%"></div></div>
+        <div style="font-size:12px;color:var(--ink2)" id="res-verdict">—</div>
+      </div>
+    </div>
+
+    <!-- BENCHMARK COMPARISON -->
+    <div class="card" id="bench-card">
+      <div class="sec-label">How you compare — 2026 benchmarks</div>
+      <div id="bench-bars"></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'findings')">Findings</div>
+      <div class="tab" onclick="switchTab(this,'diff-tab')">Before / After diff</div>
+      <div class="tab" onclick="switchTab(this,'stubs-tab')">Lesson stubs</div>
+      <div class="tab" onclick="switchTab(this,'overall-tab')">Full assessment</div>
+    </div>
+
+    <div class="tab-panel active" id="panel-findings">
+      <div class="grid-2">
+        <div class="card">
+          <div class="audit-header"><div class="audit-dot" style="background:var(--red)"></div><div class="audit-title" style="color:var(--red)">Red flags</div></div>
+          <ul class="audit-list" id="res-redflags"></ul>
+        </div>
+        <div class="card">
+          <div class="audit-header"><div class="audit-dot" style="background:var(--accent)"></div><div class="audit-title" style="color:var(--accent)">Strengths</div></div>
+          <ul class="audit-list" id="res-strengths"></ul>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="audit-header"><div class="audit-dot" style="background:var(--amber)"></div><div class="audit-title" style="color:var(--amber)">Missing — should be teaching</div></div>
+          <ul class="audit-list" id="res-missing"></ul>
+        </div>
+        <div class="card">
+          <div class="audit-header"><div class="audit-dot" style="background:var(--ink3)"></div><div class="audit-title" style="color:var(--ink2)">Obsolete content</div></div>
+          <ul class="audit-list" id="res-obsolete"></ul>
+        </div>
+      </div>
+      <div class="card">
+        <div class="audit-header"><div class="audit-dot" style="background:var(--blue)"></div><div class="audit-title" style="color:var(--blue)">Opportunities to differentiate</div></div>
+        <ul class="audit-list" id="res-opportunities"></ul>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="panel-diff-tab">
+      <div id="diff-container">
+        <div class="notice notice-info">Enable "Compare with previous version" in the audit form to see a before/after diff. Or paste your previous curriculum below to compare now.</div>
+        <textarea id="diffpaste" rows="5" placeholder="Paste your previous curriculum version to compare..."></textarea>
+        <button class="btn btn-ghost" style="margin-top:10px" onclick="runDiffFromPaste()">Generate diff →</button>
+      </div>
+      <div id="diff-output" style="display:none">
+        <div class="grid-4" id="diff-stats"></div>
+        <div class="diff-row" id="diff-cols"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="panel-stubs-tab">
+      <div class="notice notice-success">Lesson stubs auto-generated for every identified gap. Each is a ready-to-use week-one outline.</div>
+      <div id="stubs-container"></div>
+    </div>
+
+    <div class="tab-panel" id="panel-overall-tab">
+      <div class="card">
+        <div class="sec-label">Overall assessment</div>
+        <p style="font-size:13px;color:var(--ink2);line-height:1.75" id="res-overall"></p>
+      </div>
+      <div class="card">
+        <div class="sec-label">90-day action plan</div>
+        <div id="action-plan"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="export-btns">
+      <button class="btn btn-primary" onclick="exportPDF()">Export PDF report</button>
+      <button class="btn btn-ghost" onclick="copyShareLink()">Copy share link</button>
+      <button class="btn btn-ghost" onclick="exportNotion()">Push to Notion</button>
+      <button class="btn btn-ghost" onclick="runNewAudit()">Run new audit →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: HISTORY -->
+<div class="screen" id="scr-history">
+  <div class="page-head">
+    <div class="page-title">Audit history</div>
+    <div class="page-sub">Track score progression over time. Every audit is stored and feeds the before/after diff engine.</div>
+  </div>
+  <div class="notice notice-info">This session's audits appear here. In production, this persists via your account and feeds into department-level reporting.</div>
+  <div class="timeline" id="history-timeline">
+    <div style="font-size:12px;color:var(--ink3);padding:10px 0">No audits yet this session. Run your first audit to start building history.</div>
+  </div>
+  <div class="divider"></div>
+  <div class="label" style="margin-bottom:14px">Simulated historical trend — ELA Curriculum, 6–8</div>
+  <div id="trend-demo">
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot" style="background:var(--red)"></div><div class="tl-date">Sep 2025</div><div class="tl-content"><div class="tl-score" style="color:var(--red)">58 / 100</div><div class="tl-name">ELA 6–8 · first audit</div><div style="margin-top:6px;font-size:11px;color:var(--ink3)">7 red flags · 4 missing topics</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--amber)"></div><div class="tl-date">Nov 2025</div><div class="tl-content"><div class="tl-score" style="color:var(--amber)">67 / 100 <span class="delta delta-up" style="font-size:12px">+9</span></div><div class="tl-name">ELA 6–8 · revised unit 2–4</div><div style="margin-top:6px;font-size:11px;color:var(--ink3)">3 red flags resolved · 2 topics added</div></div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">Jan 2026</div><div class="tl-content"><div class="tl-score" style="color:var(--accent)">78 / 100 <span class="delta delta-up" style="font-size:12px">+11</span></div><div class="tl-name">ELA 6–8 · full revision</div><div style="margin-top:6px;font-size:11px;color:var(--ink3)">1 red flag remaining · on track for 80+</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: DIFF -->
+<div class="screen" id="scr-diff">
+  <div class="page-head">
+    <div class="page-title">Before / after diff</div>
+    <div class="page-sub">Upload two versions of the same curriculum and see exactly what changed, what improved, and what score delta you achieved.</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="sec-label" style="color:var(--red)">Version A — previous</div>
+      <textarea id="diff-a" rows="7" placeholder="Paste your earlier curriculum version..."></textarea>
+    </div>
+    <div class="card">
+      <div class="sec-label" style="color:var(--accent)">Version B — current</div>
+      <textarea id="diff-b" rows="7" placeholder="Paste your updated curriculum version..."></textarea>
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>Grade band</label><select id="diff-grade"><option value="K-2">K–2</option><option value="3-5">3–5</option><option value="6-8" selected>6–8</option><option value="9-12">9–12</option></select></div>
+    <div class="field"><label>Subject</label><select id="diff-subject"><option value="Math">Mathematics</option><option value="Science">Science</option><option value="English Language Arts" selected>English Language Arts</option><option value="Social Studies">Social Studies</option><option value="Computer Science">Computer Science</option></select></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="runFullDiff()">Compare versions →</button>
+    <button class="btn btn-ghost" onclick="loadDiffDemo()">Load demo comparison</button>
+  </div>
+  <div class="loading" id="diff-loading" style="display:none">
+    <div class="ldots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+    <span>Scoring both versions and generating comparison...</span>
+  </div>
+  <div id="diff-results" style="display:none">
+    <div class="divider"></div>
+    <div class="grid-4" id="diff-kpis"></div>
+    <div class="diff-row" id="diff-main"></div>
+    <div class="card">
+      <div class="sec-label">What moved the needle</div>
+      <p style="font-size:13px;color:var(--ink2);line-height:1.7" id="diff-analysis"></p>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: LESSON STUBS -->
+<div class="screen" id="scr-lessons">
+  <div class="page-head">
+    <div class="page-title">Lesson stubs</div>
+    <div class="page-sub">Auto-generated lesson outlines for every gap identified in your audits. Expand any stub into a full lesson plan.</div>
+  </div>
+  <div class="notice notice-info">Stubs are generated after each audit. Run an audit first to populate this library. Sample stubs shown below.</div>
+  <div class="field-row" style="margin-bottom:16px">
+    <div class="field"><label>Filter by gap type</label>
+      <select id="stub-filter" onchange="filterStubs()">
+        <option value="all">All gaps</option>
+        <option value="missing">Missing topics</option>
+        <option value="opportunity">Opportunities</option>
+        <option value="red-flag">Red flag areas</option>
+      </select>
+    </div>
+    <div class="field"><label>Grade</label>
+      <select id="stub-grade-filter"><option value="all">All grades</option><option value="6-8" selected>6–8</option><option value="9-12">9–12</option></select>
+    </div>
+  </div>
+  <div id="stubs-library">
+    <div class="stub-card">
+      <div class="stub-week">WEEK 1 OUTLINE · MISSING TOPIC</div>
+      <div class="stub-title">Data literacy & statistical reasoning</div>
+      <ul class="stub-items">
+        <li>Day 1: Introduction to data types — categorical vs quantitative. Real-world datasets (school lunch orders, weather data)</li>
+        <li>Day 2: Mean, median, mode — when each is appropriate. Common misconceptions about "average"</li>
+        <li>Day 3: Reading and interpreting bar charts, histograms, and scatter plots</li>
+        <li>Day 4: Identifying misleading charts — media literacy connection</li>
+        <li>Day 5: Mini-project: students collect class data, visualize, and present one finding</li>
+      </ul>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn btn-ghost" style="padding:6px 12px;font-size:11px" onclick="expandStub(this,'data-literacy')">Expand to full plan →</button>
+        <span class="prog-tag pt-todo">Not started</span>
+      </div>
+    </div>
+    <div class="stub-card">
+      <div class="stub-week">WEEK 1 OUTLINE · MISSING TOPIC</div>
+      <div class="stub-title">Argumentative writing with evidence</div>
+      <ul class="stub-items">
+        <li>Day 1: Anatomy of an argument — claim, evidence, reasoning (CER framework)</li>
+        <li>Day 2: Finding and evaluating credible sources. Distinguishing primary vs secondary</li>
+        <li>Day 3: Structuring an argumentative paragraph. Practice with low-stakes topics</li>
+        <li>Day 4: Counterargument and rebuttal — why acknowledging the other side strengthens your position</li>
+        <li>Day 5: Draft a 5-paragraph argumentative essay on an assigned topic</li>
+      </ul>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn btn-ghost" style="padding:6px 12px;font-size:11px" onclick="expandStub(this,'argumentative-writing')">Expand to full plan →</button>
+        <span class="prog-tag pt-doing" style="cursor:pointer">In progress</span>
+      </div>
+    </div>
+    <div class="stub-card">
+      <div class="stub-week">WEEK 1 OUTLINE · OPPORTUNITY</div>
+      <div class="stub-title">Media literacy & information verification</div>
+      <ul class="stub-items">
+        <li>Day 1: What is a "reliable source"? SIFT method introduction (Stop, Investigate, Find better coverage, Trace claims)</li>
+        <li>Day 2: Fact-checking exercise — students evaluate 5 real news claims using free tools</li>
+        <li>Day 3: Algorithmic bias — how recommendation systems shape what we see</li>
+        <li>Day 4: Creating vs consuming: student-produced short video with cited sources</li>
+        <li>Day 5: Reflection and discussion: how does this change how you use your phone?</li>
+      </ul>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn btn-ghost" style="padding:6px 12px;font-size:11px" onclick="expandStub(this,'media-literacy')">Expand to full plan →</button>
+        <span class="prog-tag pt-done">Implemented</span>
+      </div>
+    </div>
+  </div>
+  <div id="expanded-stub" style="display:none;margin-top:16px">
+    <div class="divider"></div>
+    <div class="loading" id="stub-loading"><div class="ldots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div><span>Generating full 4-week lesson plan...</span></div>
+    <div id="stub-full" style="display:none"></div>
+  </div>
+</div>
+
+<!-- SCREEN: BENCHMARKS -->
+<div class="screen" id="scr-benchmarks">
+  <div class="page-head">
+    <div class="page-title">Benchmark intelligence</div>
+    <div class="page-sub">How your curricula compare to state medians, national averages, and top-quartile schools in 2026.</div>
+  </div>
+  <div class="notice notice-warn"><strong>Data source note:</strong> Benchmarks are estimated from Claude's training on publicly available standards data. Production version would connect to live state DOE APIs and annual NAEP reporting.</div>
+  <div class="grid-4">
+    <div class="stat"><div class="stat-label">Your avg score</div><div class="stat-val" style="color:var(--accent)">71</div><div class="stat-sub">this school</div></div>
+    <div class="stat"><div class="stat-label">State median</div><div class="stat-val">65</div><div class="stat-sub">estimated · CA</div></div>
+    <div class="stat"><div class="stat-label">National avg</div><div class="stat-val">62</div><div class="stat-sub">public schools</div></div>
+    <div class="stat"><div class="stat-label">Top quartile</div><div class="stat-val" style="color:var(--accent)">82</div><div class="stat-sub">target threshold</div></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Score vs benchmarks by subject</div>
+    <div style="margin-top:8px">
+      <div style="font-size:11px;color:var(--ink3);font-family:var(--mono);margin-bottom:12px">▌ = your school &nbsp; benchmarks: state median / national avg / top quartile</div>
+      <div class="bench-row"><div class="bench-label">ELA · 6–8</div><div class="bench-track"><div class="bench-fill" style="width:78%;background:var(--accent-mid)"></div><div class="bench-marker" style="left:65%"></div></div><div class="bench-val">78</div></div>
+      <div class="bench-row"><div class="bench-label">Math · 6–8</div><div class="bench-track"><div class="bench-fill" style="width:64%;background:var(--amber)"></div><div class="bench-marker" style="left:67%"></div></div><div class="bench-val">64</div></div>
+      <div class="bench-row"><div class="bench-label">Science · 6–8</div><div class="bench-track"><div class="bench-fill" style="width:0%;background:var(--ink4)"></div><div class="bench-marker" style="left:60%"></div></div><div class="bench-val" style="color:var(--ink3)">—</div></div>
+      <div class="bench-row"><div class="bench-label">Social Studies</div><div class="bench-track"><div class="bench-fill" style="width:0%;background:var(--ink4)"></div><div class="bench-marker" style="left:63%"></div></div><div class="bench-val" style="color:var(--ink3)">—</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-label">What top-quartile schools do differently</div>
+    <ul class="audit-list">
+      <li><div class="ali-marker" style="background:var(--accent)"></div>Explicitly teach data literacy as a cross-subject skill starting in grade 5</li>
+      <li><div class="ali-marker" style="background:var(--accent)"></div>Dedicate 15–20% of ELA time to non-fiction and primary source analysis</li>
+      <li><div class="ali-marker" style="background:var(--accent)"></div>Integrate computational thinking into at least 2 non-CS subjects per grade</li>
+      <li><div class="ali-marker" style="background:var(--accent)"></div>Align assessments explicitly to ACT/SAT skill domains 2 years before testing eligibility</li>
+      <li><div class="ali-marker" style="background:var(--accent)"></div>Audit curricula at least twice per academic year and iterate based on results</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SCREEN: DEPARTMENT -->
+<div class="screen" id="scr-department">
+  <div class="page-head">
+    <div class="page-title">Department health</div>
+    <div class="page-sub">Administrator view. All teachers, all curricula, school-wide health score. The institutional lens that enables district-level contracts.</div>
+  </div>
+  <div class="kpi-banner">
+    <div class="kpi-title">DEPARTMENT OVERVIEW · SPRING 2026</div>
+    <div class="kpi-headline">Lincoln Middle School · 8 curricula tracked · avg 68</div>
+    <div class="kpi-grid">
+      <div class="kpi-cell"><div class="kpi-cell-label">School score</div><div class="kpi-cell-val">68</div><div class="kpi-cell-sub">+5 vs fall 2025</div></div>
+      <div class="kpi-cell"><div class="kpi-cell-label">At risk</div><div class="kpi-cell-val">3</div><div class="kpi-cell-sub">below 65</div></div>
+      <div class="kpi-cell"><div class="kpi-cell-label">Exceeding</div><div class="kpi-cell-val">2</div><div class="kpi-cell-sub">above 80</div></div>
+      <div class="kpi-cell"><div class="kpi-cell-label">Not audited</div><div class="kpi-cell-val">3</div><div class="kpi-cell-sub">needs first run</div></div>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="dept-row dept-header" style="padding:10px 14px">
+      <div class="dept-col">Teacher · Subject</div>
+      <div class="dept-col">Score</div>
+      <div class="dept-col">Change</div>
+      <div class="dept-col">Gaps</div>
+      <div class="dept-col">Status</div>
+    </div>
+    <div class="dept-row"><div class="dept-col name">M. Johnson · ELA 6–8</div><div class="dept-col"><span class="score-pill sp-hi">78</span></div><div class="dept-col"><span class="delta delta-up" style="font-size:11px">+6</span></div><div class="dept-col" style="color:var(--amber)">2</div><div class="dept-col"><span class="prog-tag pt-done">On track</span></div></div>
+    <div class="dept-row"><div class="dept-col name">R. Chen · Math 6–8</div><div class="dept-col"><span class="score-pill sp-mid">64</span></div><div class="dept-col"><span class="delta delta-down" style="font-size:11px">−3</span></div><div class="dept-col" style="color:var(--red)">5</div><div class="dept-col"><span class="prog-tag pt-doing">Needs review</span></div></div>
+    <div class="dept-row"><div class="dept-col name">A. Patel · Science 7</div><div class="dept-col"><span class="score-pill sp-hi">82</span></div><div class="dept-col"><span class="delta delta-up" style="font-size:11px">+11</span></div><div class="dept-col" style="color:var(--accent)">1</div><div class="dept-col"><span class="prog-tag pt-done">Exceeding</span></div></div>
+    <div class="dept-row"><div class="dept-col name">T. Williams · Social Studies 8</div><div class="dept-col"><span class="score-pill sp-mid">61</span></div><div class="dept-col"><span class="delta delta-flat" style="font-size:11px">+0</span></div><div class="dept-col" style="color:var(--red)">6</div><div class="dept-col"><span class="prog-tag pt-doing">At risk</span></div></div>
+    <div class="dept-row"><div class="dept-col name">L. Garcia · PE / Health 6</div><div class="dept-col"><span class="score-pill sp-mid">69</span></div><div class="dept-col"><span class="delta delta-up" style="font-size:11px">+2</span></div><div class="dept-col" style="color:var(--amber)">3</div><div class="dept-col"><span class="prog-tag pt-todo">In progress</span></div></div>
+    <div class="dept-row"><div class="dept-col name">K. Brown · Computer Science 7</div><div class="dept-col"><span class="score-pill sp-lo">54</span></div><div class="dept-col"><span class="delta delta-down" style="font-size:11px">−1</span></div><div class="dept-col" style="color:var(--red)">8</div><div class="dept-col"><span class="prog-tag pt-doing">At risk</span></div></div>
+    <div class="dept-row"><div class="dept-col name">D. Kim · ELA 7</div><div class="dept-col" style="color:var(--ink3)"><span class="score-pill sp-lo">—</span></div><div class="dept-col" style="color:var(--ink4)">—</div><div class="dept-col" style="color:var(--ink3)">—</div><div class="dept-col"><span class="prog-tag pt-todo">Not audited</span></div></div>
+    <div class="dept-row"><div class="dept-col name">S. Lee · Math 8</div><div class="dept-col"><span class="score-pill sp-lo">—</span></div><div class="dept-col" style="color:var(--ink4)">—</div><div class="dept-col" style="color:var(--ink3)">—</div><div class="dept-col"><span class="prog-tag pt-todo">Not audited</span></div></div>
+  </div>
+  <div class="btn-row" style="margin-top:14px">
+    <button class="btn btn-primary" onclick="exportDept()">Export department report</button>
+    <button class="btn btn-ghost" onclick="nav('audit')">Run audit for at-risk curriculum</button>
+  </div>
+</div>
+
+<!-- SCREEN: PRICING -->
+<div class="screen" id="scr-pricing">
+  <div class="page-head">
+    <div class="page-title">Plans & pricing</div>
+    <div class="page-sub">Hypothesis: 3-tier model targeting individual teachers, schools, and districts. Pricing anchored to value — not cost.</div>
+  </div>
+  <div class="notice notice-amber" style="background:var(--amber-light);border:1px solid #f0d0b0;color:#7a4008">
+    <strong>PM note:</strong> These are pricing hypotheses for prototype validation — not final prices. The test: does $49/month convert a teacher who runs 3+ audits per semester? Does the School tier justify a budget line to a principal? Interview 10 buyers before committing.
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tier">Teacher</div>
+      <div class="price-num">$49</div>
+      <div class="price-per">/ month · billed annually</div>
+      <ul class="price-features">
+        <li><div class="pf-check">✓</div>10 audits / month</li>
+        <li><div class="pf-check">✓</div>Before/after diff engine</li>
+        <li><div class="pf-check">✓</div>Lesson stub generator</li>
+        <li><div class="pf-check">✓</div>Audit history (1 year)</li>
+        <li><div class="pf-check">✓</div>PDF export</li>
+        <li><div class="pf-x">✗</div>Department dashboard</li>
+        <li><div class="pf-x">✗</div>Standards API integration</li>
+        <li><div class="pf-x">✗</div>LMS integration</li>
+      </ul>
+    </div>
+    <div class="price-card featured">
+      <div style="font-size:9px;font-family:var(--mono);background:var(--accent);color:#fff;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px">MOST COMMON ENTRY</div>
+      <div class="price-tier">School</div>
+      <div class="price-num">$299</div>
+      <div class="price-per">/ month · up to 20 teachers</div>
+      <ul class="price-features">
+        <li><div class="pf-check">✓</div>Unlimited audits</li>
+        <li><div class="pf-check">✓</div>All Teacher features</li>
+        <li><div class="pf-check">✓</div>Department dashboard</li>
+        <li><div class="pf-check">✓</div>Admin / principal view</li>
+        <li><div class="pf-check">✓</div>Peer benchmark data</li>
+        <li><div class="pf-check">✓</div>Standards drift alerts</li>
+        <li><div class="pf-check">✓</div>Google Classroom export</li>
+        <li><div class="pf-x">✗</div>Certified standards API</li>
+      </ul>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">District</div>
+      <div class="price-num">Custom</div>
+      <div class="price-per">contact sales · 50+ schools</div>
+      <ul class="price-features">
+        <li><div class="pf-check">✓</div>Everything in School</li>
+        <li><div class="pf-check">✓</div>Live standards API</div></li>
+        <li><div class="pf-check">✓</div>FERPA-compliant data</li>
+        <li><div class="pf-check">✓</div>LMS integration (Canvas, Moodle)</li>
+        <li><div class="pf-check">✓</div>Certified audit reports</li>
+        <li><div class="pf-check">✓</div>Learning scientist validation</li>
+        <li><div class="pf-check">✓</div>Dedicated CS + onboarding</li>
+        <li><div class="pf-check">✓</div>SLA + SOC 2 compliance</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Validation roadmap — how this becomes a certified product</div>
+    <div style="display:grid;gap:12px;margin-top:4px">
+      <div style="display:flex;gap:12px;align-items:flex-start;padding-bottom:12px;border-bottom:1px solid var(--ink4)">
+        <div style="min-width:24px;height:24px;background:var(--accent-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--accent);flex-shrink:0">1</div>
+        <div><div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px">Live standards API integration</div><div style="font-size:12px;color:var(--ink2);line-height:1.5">Connect Common Core API, state DOE feeds, NAEP framework documents. Replace AI knowledge proxy with authoritative, versioned data. Est: 8 weeks engineering.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;padding-bottom:12px;border-bottom:1px solid var(--ink4)">
+        <div style="min-width:24px;height:24px;background:var(--accent-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--accent);flex-shrink:0">2</div>
+        <div><div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px">Parallel validation pilot</div><div style="font-size:12px;color:var(--ink2);line-height:1.5">One school, synthetic audit vs real student outcomes, 1 semester. Measure correlation. Without this data the product stalls at the curriculum director level.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;padding-bottom:12px;border-bottom:1px solid var(--ink4)">
+        <div style="min-width:24px;height:24px;background:var(--accent-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--accent);flex-shrink:0">3</div>
+        <div><div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px">Learning scientist advisory</div><div style="font-size:12px;color:var(--ink2);line-height:1.5">Hire or partner with a credentialed instructional designer to validate the audit rubric. Required to pass district procurement. Eliminates the internal skeptic blocker.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;padding-bottom:12px;border-bottom:1px solid var(--ink4)">
+        <div style="min-width:24px;height:24px;background:var(--accent-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--accent);flex-shrink:0">4</div>
+        <div><div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px">FERPA + COPPA compliance</div><div style="font-size:12px;color:var(--ink2);line-height:1.5">Legal review before any district contract. Student data laws are non-negotiable. Get DPA templates prepared before first district sales call.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="min-width:24px;height:24px;background:var(--accent-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--accent);flex-shrink:0">5</div>
+        <div><div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px">Calibration flywheel</div><div style="font-size:12px;color:var(--ink2);line-height:1.5">Feed real student outcome data back into audit scoring model. Every school that uses it improves accuracy for all. This is the moat a standalone AI query cannot replicate.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: PRODUCT METRICS -->
+<div class="screen" id="scr-metrics">
+  <div class="page-head">
+    <div class="page-title">Product metrics</div>
+    <div class="page-sub">The KPIs this product lives and dies by. Defined before launch — not after. These are the numbers that determine whether we have a product or a demo.</div>
+  </div>
+  <div class="notice notice-info"><strong>PM discipline:</strong> Every metric has a baseline, a 90-day target, an owner, and a measurement method. "Engagement increased" is not a metric.</div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="metrics-table">
+      <thead><tr><th>Metric</th><th>What it measures</th><th>Baseline</th><th>90-day target</th><th>Measurement</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:500;color:var(--ink)">Week-2 return rate</td><td>Do users come back after first audit?</td><td>0% (no data)</td><td style="color:var(--accent)">45%</td><td>Session tracking · unique user</td></tr>
+        <tr><td style="font-weight:500;color:var(--ink)">Audits per active user/mo</td><td>Are teachers using this as a workflow or a one-shot?</td><td>0</td><td style="color:var(--accent)">3.5</td><td>Audit count / MAU</td></tr>
+        <tr><td style="font-weight:500;color:var(--ink)">Score delta after revision</td><td>Does acting on findings actually improve quality?</td><td>0</td><td style="color:var(--accent)">+8 avg</td><td>Diff engine · before vs after</td></tr>
+        <tr><td style="font-weight:500;color:var(--ink)">Lesson stub adoption</td><td>Do teachers implement generated stubs?</td><td>0%</td><td style="color:var(--accent)">30%</td><td>Stub "implemented" toggle clicks</td></tr>
+        <tr><td style="font-weight:500;color:var(--ink)">School tier conversion</td><td>Do Teacher-tier users upgrade to School tier?</td><td>0%</td><td style="color:var(--accent)">12%</td><td>Plan upgrade events</td></tr>
+        <tr><td style="font-weight:500;color:var(--ink)">Time-to-first-value</td><td>How quickly does a new user get a useful audit?</td><td>—</td><td style="color:var(--accent)">&lt; 4 min</td><td>Signup → first audit complete</td></tr>
+        <tr><td style="font-weight:500;color:var(--ink)">NPS (teachers)</td><td>Would they recommend to colleagues?</td><td>0 (no data)</td><td style="color:var(--accent)">&gt; 45</td><td>In-app survey at day 14 + day 45</td></tr>
+        <tr><td style="font-weight:500;color:var(--ink)">Synthetic-to-real correlation</td><td>Does audit score predict actual student outcomes?</td><td>Unknown</td><td style="color:var(--accent)">r &gt; 0.6</td><td>Parallel pilot · Pearson correlation</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="divider"></div>
+  <div class="label">90-day activation funnel hypothesis</div>
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--ink4)">
+        <div style="width:180px;height:8px;background:var(--accent-mid);border-radius:4px"></div>
+        <div style="font-size:12px;color:var(--ink)">100% — sign up</div>
+        <div style="font-size:11px;color:var(--ink3);margin-left:auto">day 0</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--ink4)">
+        <div style="width:153px;height:8px;background:var(--accent-mid);border-radius:4px"></div>
+        <div style="font-size:12px;color:var(--ink)">85% — complete first audit</div>
+        <div style="font-size:11px;color:var(--ink3);margin-left:auto">day 0–1</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--ink4)">
+        <div style="width:108px;height:8px;background:var(--amber);border-radius:4px"></div>
+        <div style="font-size:12px;color:var(--ink)">60% — return for 2nd audit (week 2)</div>
+        <div style="font-size:11px;color:var(--ink3);margin-left:auto">day 7–14</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--ink4)">
+        <div style="width:81px;height:8px;background:var(--amber);border-radius:4px"></div>
+        <div style="font-size:12px;color:var(--ink)">45% — implement a lesson stub</div>
+        <div style="font-size:11px;color:var(--ink3);margin-left:auto">day 14–30</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--ink4)">
+        <div style="width:54px;height:8px;background:var(--red);border-radius:4px"></div>
+        <div style="font-size:12px;color:var(--ink)">30% — run diff after revision</div>
+        <div style="font-size:11px;color:var(--ink3);margin-left:auto">day 21–45</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:11px 0">
+        <div style="width:22px;height:8px;background:var(--accent);border-radius:4px"></div>
+        <div style="font-size:12px;color:var(--ink)">12% — upgrade to School tier</div>
+        <div style="font-size:11px;color:var(--ink3);margin-left:auto">day 30–90</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+</div><!-- end shell -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+let auditHistory=[];
+let currentResult=null;
+let uploadedFiles=[];
+
+function nav(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('scr-'+id).classList.add('active');
+  const items=document.querySelectorAll('.nav-item');
+  items.forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'")){n.classList.add('active');}});
+  window.scrollTo(0,0);
+}
+
+function switchTab(el,name){
+  const tabs=el.parentElement.querySelectorAll('.tab');
+  tabs.forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+function toggleCompare(cb){
+  document.getElementById('prev-upload').style.display=cb.checked?'block':'none';
+  const track=document.getElementById('toggle-track');
+  const thumb=document.getElementById('toggle-thumb');
+  track.style.background=cb.checked?'var(--accent)':'var(--ink4)';
+  thumb.style.left=cb.checked?'19px':'3px';
+}
+
+document.getElementById('currtext').addEventListener('input',function(){
+  document.getElementById('charcount').textContent=this.value.length.toLocaleString()+' chars';
+});
+
+function handleFiles(inp){
+  Array.from(inp.files).forEach(f=>{
+    uploadedFiles.push(f);
+    const tag=document.createElement('div');tag.className='ftag';
+    tag.innerHTML=`<span>${f.name}</span><span class="ftag-x" onclick="removeFile('${f.name}',this)">×</span>`;
+    document.getElementById('filetags').appendChild(tag);
+  });
+}
+function removeFile(name,el){uploadedFiles=uploadedFiles.filter(f=>f.name!==name);el.parentElement.remove();}
+
+function getKey(){return document.getElementById('apikey').value.trim();}
+
+async function callAI(prompt,maxT=1600){
+  const k=getKey();
+  if(!k){showError('Add your Anthropic API key to run the audit.');throw new Error('No key');}
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxT,messages:[{role:'user',content:prompt}]})
+  });
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message);
+  return d.content.map(c=>c.text||'').join('');
+}
+
+async function runAudit(){
+  const text=document.getElementById('currtext').value.trim();
+  if(!text&&uploadedFiles.length===0){showError('Paste curriculum text or upload a file to begin.');return;}
+  const grade=document.getElementById('grade').value;
+  const subject=document.getElementById('subject').value;
+  const state=document.getElementById('state').value.trim()||'United States';
+  const stype=document.getElementById('stype').value;
+  const compareOn=document.getElementById('compare-toggle').checked;
+  const prevText=document.getElementById('prevtext').value.trim();
+  const currentYear=new Date().getFullYear();
+
+  document.getElementById('audit-form').style.opacity='0.4';
+  document.getElementById('audit-form').style.pointerEvents='none';
+  document.getElementById('audit-loading').style.display='flex';
+  document.getElementById('audit-error').style.display='none';
+  document.getElementById('audit-results').style.display='none';
+
+  const labels=['Parsing curriculum structure...','Mapping to '+currentYear+' national benchmarks...','Identifying gaps and red flags...','Generating lesson stubs...','Calculating benchmark comparison...'];
+  let li=0;
+  const iv=setInterval(()=>{if(li<labels.length-1){li++;document.getElementById('loading-label').textContent=labels[li];}},2200);
+
+  const prompt=`You are an elite curriculum auditor with deep knowledge of US education standards as of ${currentYear}. Be specific — name exact topics, standards references, skills.
+
+Context: Grade ${grade} · Subject: ${subject} · Location: ${state} · School type: ${stype} · Year: ${currentYear}
+
+Evaluate against what students at this level in ${state} need to know in ${currentYear} to be nationally competitive. Reference Common Core, NAEP, ACT/SAT readiness frameworks, and current workforce skills research.
+
+CURRICULUM TO AUDIT:
+${text.substring(0,5000)}
+${uploadedFiles.length>0?'Attached files: '+uploadedFiles.map(f=>f.name).join(', '):''}
+
+${compareOn&&prevText?'PREVIOUS VERSION PROVIDED — also analyze what changed:\n'+prevText.substring(0,2000):''}
+
+Return ONLY valid JSON, no markdown, no backticks:
+{
+  "health_score": <0-100>,
+  "score_description": "<direct 2-sentence honest verdict>",
+  "state_median_estimate": <55-72>,
+  "national_avg_estimate": <52-68>,
+  "top_quartile_estimate": <78-88>,
+  "red_flags": ["<specific issue with standard reference if possible>","<issue 2>","<issue 3>"],
+  "strengths": ["<what is genuinely strong>","<strength 2>","<strength 3>"],
+  "missing_topics": ["<specific topic + why it matters in ${currentYear}>","<topic 2>","<topic 3>","<topic 4>"],
+  "obsolete_content": ["<what no longer belongs + why>","<item 2>","<item 3>"],
+  "opportunities": ["<specific differentiation opportunity>","<opp 2>","<opp 3>"],
+  "overall_assessment": "<5 sentences. Where does this curriculum stand, what are the top 2 gaps, what one change moves the needle most, what is the realistic 90-day path to 80+>",
+  "action_plan": [
+    {"week":"1–2","action":"<specific action>","owner":"<Teacher|Dept head|Admin>","impact":"<what it fixes>"},
+    {"week":"3–4","action":"<specific action>","owner":"<role>","impact":"<what it fixes>"},
+    {"week":"5–8","action":"<specific action>","owner":"<role>","impact":"<what it fixes>"}
+  ],
+  "lesson_stubs": [
+    {"gap":"<gap name>","type":"<missing|opportunity|red-flag>","week1":["<day 1 outline>","<day 2>","<day 3>","<day 4>","<day 5>"]},
+    {"gap":"<gap 2>","type":"missing","week1":["<day 1>","<day 2>","<day 3>","<day 4>","<day 5>"]}
+  ]${compareOn&&prevText?`,
+  "diff_summary": {"resolved_issues":["<what was fixed>","<fix 2>"],"new_issues":["<new gap if any>"],"score_drivers":["<what caused the score change>"]}`:''
+}
+}`;
+
+  try{
+    const txt=await callAI(prompt,2000);
+    clearInterval(iv);
+    const parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    currentResult={...parsed,grade,subject,state,stype,text:text.substring(0,200),date:new Date().toLocaleDateString(),prevText:prevText||null};
+    auditHistory.unshift(currentResult);
+    document.getElementById('audit-count').textContent=auditHistory.length;
+    renderResult(parsed,subject,grade,compareOn&&prevText?true:false);
+    updateHistory();
+  }catch(e){
+    clearInterval(iv);
+    showError('Error: '+e.message+'. Check your API key and try again.');
+    document.getElementById('audit-form').style.opacity='1';
+    document.getElementById('audit-form').style.pointerEvents='auto';
+  }
+  document.getElementById('audit-loading').style.display='none';
+}
+
+function renderResult(d,subject,grade,hasDiff){
+  document.getElementById('audit-form').style.opacity='1';
+  document.getElementById('audit-form').style.pointerEvents='auto';
+  document.getElementById('audit-results').style.display='block';
+
+  const score=d.health_score||0;
+  const sn=document.getElementById('res-score');
+  sn.textContent=score;
+  sn.className='score-num '+(score>=75?'hi':score>=60?'mid':'lo');
+  document.getElementById('res-subject-label').textContent=subject+' · '+grade;
+  document.getElementById('res-verdict').textContent=d.score_description||'';
+  const bar=document.getElementById('res-bar');
+  bar.style.width=score+'%';
+  bar.style.background=score>=75?'var(--accent-mid)':score>=60?'var(--amber)':'var(--red)';
+
+  const stateM=d.state_median_estimate||65;
+  const natA=d.national_avg_estimate||62;
+  const topQ=d.top_quartile_estimate||82;
+  document.getElementById('bench-bars').innerHTML=`
+    ${benchRow('Your score',score,score>=75?'var(--accent-mid)':score>=60?'var(--amber)':'var(--red)',score)}
+    ${benchRow('State median (est.)',stateM,'var(--ink3)',stateM)}
+    ${benchRow('National avg (est.)',natA,'var(--ink4)',natA)}
+    ${benchRow('Top quartile (est.)',topQ,'var(--accent)',topQ)}`;
+
+  renderList('res-redflags',d.red_flags||[],'var(--red)');
+  renderList('res-strengths',d.strengths||[],'var(--accent)');
+  renderList('res-missing',d.missing_topics||[],'var(--amber)');
+  renderList('res-obsolete',d.obsolete_content||[],'var(--ink3)');
+  renderList('res-opportunities',d.opportunities||[],'var(--blue)');
+  document.getElementById('res-overall').textContent=d.overall_assessment||'';
+
+  const ap=document.getElementById('action-plan');
+  ap.innerHTML=(d.action_plan||[]).map(a=>`
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--ink4)">
+      <div style="min-width:60px;font-size:10px;font-family:var(--mono);color:var(--ink3);padding-top:2px">Week ${a.week}</div>
+      <div><div style="font-size:12px;font-weight:500;color:var(--ink);margin-bottom:2px">${a.action||''}</div>
+      <div style="font-size:11px;color:var(--ink3)">Owner: ${a.owner||'—'} · ${a.impact||''}</div></div>
+    </div>`).join('');
+
+  const sc=document.getElementById('stubs-container');
+  sc.innerHTML=(d.lesson_stubs||[]).map(s=>`
+    <div class="stub-card">
+      <div class="stub-week">WEEK 1 OUTLINE · ${(s.type||'missing').toUpperCase()}</div>
+      <div class="stub-title">${s.gap||'Untitled gap'}</div>
+      <ul class="stub-items">${(s.week1||[]).map(d=>`<li>${d}</li>`).join('')}</ul>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn btn-ghost" style="padding:6px 12px;font-size:11px">Expand to full plan →</button>
+        <span class="prog-tag pt-todo">Not started</span>
+      </div>
+    </div>`).join('')||'<div style="font-size:12px;color:var(--ink3)">No stubs generated. Re-run the audit for stub generation.</div>';
+
+  if(hasDiff&&d.diff_summary){
+    renderInlineDiff(d.diff_summary);
+  }
+
+  document.getElementById('audit-results').scrollIntoView({behavior:'smooth'});
+}
+
+function benchRow(label,val,color,display){
+  return `<div class="bench-row"><div class="bench-label">${label}</div>
+    <div class="bench-track"><div class="bench-fill" style="width:${Math.min(val,100)}%;background:${color}"></div></div>
+    <div class="bench-val">${display}</div></div>`;
+}
+
+function renderList(id,items,color){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.innerHTML=items.map(item=>`<li><div class="ali-marker" style="background:${color}"></div>${item}</li>`).join('')||
+    '<li><div class="ali-marker" style="background:var(--ink4)"></div><span style="color:var(--ink3)">None identified</span></li>';
+}
+
+function renderInlineDiff(ds){
+  const dc=document.getElementById('diff-container');
+  const dout=document.getElementById('diff-output');
+  dc.style.display='none';dout.style.display='block';
+  document.getElementById('diff-stats').innerHTML=`
+    <div class="stat"><div class="stat-label">Issues resolved</div><div class="stat-val" style="color:var(--accent)">${(ds.resolved_issues||[]).length}</div></div>
+    <div class="stat"><div class="stat-label">New issues</div><div class="stat-val" style="color:var(--red)">${(ds.new_issues||[]).length}</div></div>
+    <div class="stat"><div class="stat-label">Score drivers</div><div class="stat-val">${(ds.score_drivers||[]).length}</div></div>
+    <div class="stat"><div class="stat-label">Net improvement</div><div class="stat-val" style="color:var(--accent)">↑</div></div>`;
+  document.getElementById('diff-cols').innerHTML=`
+    <div class="diff-col"><div class="diff-label old">Previous version issues</div>
+      ${(ds.resolved_issues||[]).map(i=>`<div class="diff-item resolved">✓ ${i}</div>`).join('')}
+      ${(ds.new_issues||[]).map(i=>`<div class="diff-item" style="color:var(--red)">! ${i}</div>`).join('')}
+    </div>
+    <div class="diff-col"><div class="diff-label new">What improved</div>
+      ${(ds.score_drivers||[]).map(i=>`<div class="diff-item added">↑ ${i}</div>`).join('')}
+    </div>`;
+}
+
+async function runDiffFromPaste(){
+  const prev=document.getElementById('diffpaste').value.trim();
+  const curr=document.getElementById('currtext').value.trim();
+  if(!prev){showToast('Paste your previous curriculum version to compare.');return;}
+  if(!curr){showToast('Go back to the audit tab and run an audit first.');return;}
+  document.getElementById('diff-container').innerHTML='<div class="loading"><div class="ldots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div><span>Generating diff...</span></div>';
+  try{
+    const prompt=`Compare these two curriculum versions. Version A (old): ${prev.substring(0,2000)}. Version B (new): ${curr.substring(0,2000)}. 
+Return ONLY valid JSON: {"resolved_issues":["<what was fixed>"],"new_issues":["<new gaps if any>"],"score_drivers":["<what caused improvement>"]}`;
+    const txt=await callAI(prompt,600);
+    const ds=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    renderInlineDiff(ds);
+  }catch(e){showError(e.message);}
+}
+
+async function runFullDiff(){
+  const a=document.getElementById('diff-a').value.trim();
+  const b=document.getElementById('diff-b').value.trim();
+  if(!a||!b){showToast('Paste both versions to compare.');return;}
+  const grade=document.getElementById('diff-grade').value;
+  const subject=document.getElementById('diff-subject').value;
+  document.getElementById('diff-loading').style.display='flex';
+  document.getElementById('diff-results').style.display='none';
+  const currentYear=new Date().getFullYear();
+  const prompt=`You are a curriculum auditor. Score and compare these two versions of a ${subject} curriculum for grade ${grade} in ${currentYear}.
+
+VERSION A (old): ${a.substring(0,2000)}
+VERSION B (new): ${b.substring(0,2000)}
+
+Return ONLY valid JSON:
+{"score_a":<0-100>,"score_b":<0-100>,"delta":<score_b minus score_a>,
+"resolved":["<fixed issue 1>","<fixed issue 2>","<fixed issue 3>"],
+"remaining":["<still present gap>","<gap 2>"],
+"new_issues":["<any new problem introduced>"],
+"analysis":"<3-4 sentences: what changed, what drove the score delta, what still needs work>"}`;
+  try{
+    const txt=await callAI(prompt,800);
+    const r=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    document.getElementById('diff-loading').style.display='none';
+    document.getElementById('diff-results').style.display='block';
+    const scoreColor=(s)=>s>=75?'var(--accent)':s>=60?'var(--amber)':'var(--red)';
+    const deltaSign=r.delta>0?'+':'';
+    document.getElementById('diff-kpis').innerHTML=`
+      <div class="stat"><div class="stat-label">Version A score</div><div class="stat-val" style="color:${scoreColor(r.score_a)}">${r.score_a}</div></div>
+      <div class="stat"><div class="stat-label">Version B score</div><div class="stat-val" style="color:${scoreColor(r.score_b)}">${r.score_b}</div></div>
+      <div class="stat"><div class="stat-label">Delta</div><div class="stat-val" style="color:${r.delta>0?'var(--accent)':'var(--red)'}">${deltaSign}${r.delta}</div></div>
+      <div class="stat"><div class="stat-label">Issues resolved</div><div class="stat-val" style="color:var(--accent)">${(r.resolved||[]).length}</div></div>`;
+    document.getElementById('diff-main').innerHTML=`
+      <div class="diff-col"><div class="diff-label old">Version A issues (score: ${r.score_a})</div>
+        ${(r.resolved||[]).map(i=>`<div class="diff-item resolved">✓ ${i}</div>`).join('')}
+        ${(r.remaining||[]).map(i=>`<div class="diff-item unchanged">◎ ${i}</div>`).join('')}
+        ${(r.new_issues||[]).map(i=>`<div class="diff-item" style="color:var(--red)">! ${i}</div>`).join('')}
+      </div>
+      <div class="diff-col"><div class="diff-label new">Version B improvements (score: ${r.score_b})</div>
+        ${(r.resolved||[]).map(i=>`<div class="diff-item added">✓ Resolved: ${i}</div>`).join('')}
+        ${(r.remaining||[]).map(i=>`<div class="diff-item unchanged">Still open: ${i}</div>`).join('')}
+      </div>`;
+    document.getElementById('diff-analysis').textContent=r.analysis||'';
+  }catch(e){
+    document.getElementById('diff-loading').style.display='none';
+    showToast('Error: '+e.message);
+  }
+}
+
+function loadDiffDemo(){
+  document.getElementById('diff-a').value=`Unit 1: Introduction to writing. Students learn basic sentence structure, punctuation rules, and paragraph formatting. Weekly vocabulary lists with definitions. Grammar drills three times per week. Reading comprehension worksheets from textbook. Spelling tests every Friday.`;
+  document.getElementById('diff-b').value=`Unit 1: Argumentative writing and evidence-based reasoning. Students study CER framework (Claim, Evidence, Reasoning). Primary source analysis integrated into weekly reading. Data literacy: students interpret charts and cite statistical evidence. Media literacy module: evaluating source credibility using SIFT method. Collaborative writing with peer review cycles. Grammar taught in context of student writing, not isolated drills.`;
+}
+
+function updateHistory(){
+  const el=document.getElementById('history-timeline');
+  if(auditHistory.length===0)return;
+  el.innerHTML=auditHistory.map(a=>{
+    const score=a.health_score||0;
+    const color=score>=75?'var(--accent)':score>=60?'var(--amber)':'var(--red)';
+    return `<div class="tl-item"><div class="tl-dot" style="background:${color}"></div>
+      <div class="tl-date">${a.date}</div>
+      <div class="tl-content">
+        <div class="tl-score" style="color:${color}">${score} / 100</div>
+        <div class="tl-name">${a.subject} · ${a.grade}</div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:4px">${a.state} · ${a.stype}</div>
+      </div></div>`;
+  }).join('');
+}
+
+function loadSampleResult(type){
+  const sample=type==='ela'?{health_score:78,subject:'English Language Arts',grade:'6–8',score_description:'Strong foundations in narrative and literary analysis. Two notable gaps: argumentative writing rigor and data literacy integration are below state top-quartile benchmarks.',state_median_estimate:66,national_avg_estimate:62,top_quartile_estimate:84,red_flags:['Argumentative writing assessed only once per semester — insufficient for ACT readiness','No primary source analysis in any unit — required by CA 7th grade framework','Grammar taught through isolated drills rather than in context of student writing'],strengths:['Narrative writing sequence is well-scaffolded across all three grade levels','Independent reading program exceeds CCSS volume requirements','Vocabulary instruction uses spaced repetition — aligned with retention research'],missing_topics:['Data literacy: reading and interpreting charts, graphs, and statistical claims (required by NAEP 2025)','Argumentative writing with evidence — CER framework (Common Core W.6–8.1)','Media literacy and source evaluation — critical for 2026 information environment','Socratic seminar / academic discussion protocols'],obsolete_content:['Weekly spelling tests as standalone assessment — research shows this approach has minimal transfer','Textbook comprehension worksheets with single correct answers — replaced by text-based discussion'],opportunities:['Integrate data literacy into existing informational text units — minimal lift, high impact','Cross-subject writing: science and social studies teachers can reinforce argumentative writing protocols without adding ELA time'],overall_assessment:'This ELA curriculum sits above state median but is 6 points below top-quartile schools. The scaffolded narrative writing sequence is a genuine strength. The most critical gap is argumentative writing — tested directly on the ACT and SBAC, currently underrepresented. Adding the CER framework to existing units is a two-week instructional change that would likely move the score 4–6 points. With the data literacy gap addressed and grammar instruction moved into context, this curriculum could reach 85+ by end of next semester.',action_plan:[{week:'1–2',action:'Add CER framework introduction to existing persuasive writing unit in each grade',owner:'Teacher',impact:'Directly addresses argumentative writing gap — highest leverage change'},{week:'3–4',action:'Identify 3 existing informational text lessons to add data chart interpretation',owner:'Teacher',impact:'Closes data literacy gap without restructuring units'},{week:'5–8',action:'Department review: audit grammar instruction approach across all three grade levels',owner:'Dept head',impact:'Shift grammar to in-context instruction — aligns with research and frees 45 min/week'}],lesson_stubs:[{gap:'Argumentative writing with evidence (CER)',type:'missing',week1:['Day 1: CER framework introduction — claim, evidence, reasoning. Practice with familiar, low-stakes topics','Day 2: What counts as evidence? Students evaluate 3 sample paragraphs and rate evidence quality','Day 3: Finding evidence in text — guided practice with an assigned reading','Day 4: Full CER paragraph on assigned topic with partner feedback using CER checklist','Day 5: Revision and share — students revise based on feedback, discuss what changed']},{gap:'Data literacy — chart and graph interpretation',type:'missing',week1:['Day 1: Types of data displays — when to use each. Real examples from recent news','Day 2: Reading bar charts and histograms — the 5 questions to ask any graph','Day 3: Identifying misleading visualizations — media literacy crossover','Day 4: Students create a chart from provided dataset and write 3 claims from their own visualization','Day 5: Mini-gallery walk: critique each other\'s data displays using a checklist']}]}
+  :{health_score:64,subject:'Mathematics',grade:'6–8',score_description:'Below state median. Procedural fluency is present but conceptual depth and data reasoning are significantly underdeveloped relative to 2026 CCSS expectations.',state_median_estimate:67,national_avg_estimate:63,top_quartile_estimate:83,red_flags:['No statistics or probability unit in grade 6 — required by CCSS 6.SP','Proportional reasoning sequence does not address unit rate or scale factor — tested on SBAC','No exposure to algebraic thinking before grade 8 — below state readiness benchmarks'],strengths:['Number sense and operations are well-sequenced with multiple representations','Formative assessment strategy is solid — exit tickets used consistently'],missing_topics:['Statistics and data analysis (CCSS 6.SP.1–5)','Ratio and proportional relationships — unit rates and scale','Algebraic expressions and equations introduction (grades 6–7)','Financial literacy — connected to real-world math application'],obsolete_content:['Long division algorithm drilled in isolation — calculators are permitted on all state assessments','Memorization of geometric formulas without conceptual connection'],opportunities:['Integrate financial math into ratio/proportion units — engaging and real-world relevant','Use free Desmos tools to add exploratory graphing — no cost, high engagement'],overall_assessment:'This math curriculum has a solid operational foundation but is 3 points below state median and 19 below top quartile. The missing statistics and data unit is the most critical gap — it is directly tested on the SBAC and NAEP and absent from the current scope. Adding the 6.SP unit is not optional for state compliance. The algebraic thinking gap will compound across grades if not addressed in grade 7. The fastest path to improvement is adding statistics in semester 2 and introducing expressions and equations earlier in the 7th grade sequence.',action_plan:[{week:'1–2',action:'Identify existing unit where statistics introduction can be embedded — ideally after fractions',owner:'Teacher',impact:'Begins closing most critical compliance gap'},{week:'3–4',action:'Consult with grade 7 and 8 teachers on algebraic readiness sequence across grades',owner:'Dept head',impact:'Prevents the gap from compounding in upper grades'},{week:'5–8',action:'Pilot Desmos activity builder for proportional reasoning unit',owner:'Teacher',impact:'Adds conceptual depth to procedural content — improves score and engagement'}],lesson_stubs:[{gap:'Statistics and data analysis (CCSS 6.SP)',type:'missing',week1:['Day 1: What is a statistical question? Students generate questions and sort by statistical vs non-statistical','Day 2: Measures of center — mean, median, mode. When is each appropriate?','Day 3: Dot plots and histograms — students create displays from collected class data','Day 4: Mean absolute deviation — what does it tell us? Visual exploration first','Day 5: Mini-project: students pick a question, collect data, display, and make one statistical claim']}]};
+  nav('audit');
+  document.getElementById('audit-results').style.display='none';
+  currentResult=sample;
+  auditHistory.unshift({...sample,date:new Date().toLocaleDateString()});
+  document.getElementById('audit-count').textContent=auditHistory.length;
+  renderResult(sample,sample.subject,sample.grade,false);
+  updateHistory();
+}
+
+function loadDemo(){
+  document.getElementById('currtext').value=`Lincoln Middle School — Grade 7 English Language Arts Curriculum Overview
+
+Unit 1: Narrative Writing (6 weeks)
+Students read and analyze short stories and novels focusing on plot structure, character development, and theme. Writing assignments include personal narratives and short fiction. Grammar instruction: comma rules, sentence variety.
+
+Unit 2: Informational Reading (5 weeks)
+Textbook-based reading comprehension. Students answer questions about main idea and supporting details. Weekly vocabulary lists with definitions. Spelling tests every Friday. Grammar: subject-verb agreement.
+
+Unit 3: Poetry and Literary Devices (4 weeks)
+Students read poems and identify metaphor, simile, alliteration, and personification. Writing: original poems using assigned devices.
+
+Unit 4: Research Project (5 weeks)
+Students select a topic and write a 5-paragraph essay using 3 sources. Note-taking from encyclopedias and textbooks. MLA formatting. Plagiarism awareness.
+
+Assessment: Quarterly multiple choice tests, weekly spelling tests, writing portfolios with final drafts.
+
+Reading list: Charlotte's Web, Island of the Blue Dolphins, selected poems from textbook anthology.
+
+Materials: Holt Literature textbook series (2015 edition).`;
+  document.getElementById('charcount').textContent=document.getElementById('currtext').value.length.toLocaleString()+' chars';
+  showToast('Demo curriculum loaded. Hit "Run audit" to analyze.');
+}
+
+function runNewAudit(){
+  document.getElementById('audit-results').style.display='none';
+  document.getElementById('currtext').value='';
+  document.getElementById('charcount').textContent='0 chars';
+  document.getElementById('filetags').innerHTML='';
+  uploadedFiles=[];
+  window.scrollTo(0,0);
+}
+
+async function expandStub(btn,topic){
+  const el=document.getElementById('expanded-stub');
+  el.style.display='block';
+  document.getElementById('stub-loading').style.display='flex';
+  document.getElementById('stub-full').style.display='none';
+  el.scrollIntoView({behavior:'smooth'});
+  const prompt=`You are a curriculum designer. Generate a concise 4-week lesson plan for "${topic.replace(/-/g,' ')}" for grade 6–8. Return only a structured outline in plain text with week headings and 3-4 bullet points per week. Keep it practical and immediately usable.`;
+  try{
+    const txt=await callAI(prompt,600);
+    document.getElementById('stub-loading').style.display='none';
+    document.getElementById('stub-full').style.display='block';
+    document.getElementById('stub-full').innerHTML=`<div class="card"><div class="sec-label">4-week lesson plan — ${topic.replace(/-/g,' ')}</div><pre style="font-size:12px;color:var(--ink2);white-space:pre-wrap;line-height:1.7;font-family:var(--font)">${txt}</pre></div>`;
+  }catch(e){
+    document.getElementById('stub-loading').style.display='none';
+    document.getElementById('stub-full').style.display='block';
+    document.getElementById('stub-full').innerHTML=`<div class="alert-strip red"><span>!</span><span>Error: ${e.message}</span></div>`;
+  }
+}
+
+function filterStubs(){/* filter logic would query stored stubs in production */}
+
+function exportPDF(){showToast('PDF export: in production, generates a formatted audit report. Requires a PDF rendering service (Puppeteer or similar).');}
+function copyShareLink(){navigator.clipboard.writeText(window.location.href).catch(()=>{});showToast('Share link copied — in production, this would be a unique URL for this audit result.');}
+function exportNotion(){showToast('Notion integration: requires Notion API token + target page ID. Est. 2 hours to wire in a developer.');}
+function exportDept(){showToast('Department report export: generates PDF with all teacher scores, trends, and recommendations for principal review.');}
+
+function showError(msg){const e=document.getElementById('audit-error');e.style.display='flex';document.getElementById('error-msg').textContent=msg;}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+</script>
+</body>
+</html>
