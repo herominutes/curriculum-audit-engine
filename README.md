@@ -14,7 +14,7 @@ CurriculumOS lets teachers, curriculum directors, and school administrators uplo
 
 ## Live demo
 
-Open [`curriculum_audit_senior.html`](https://curriculum-audit-mvp.vercel.app) directly in any modern browser. No server, no build step, no dependencies.
+Open https://curriculum-audit-mvp.vercel.app directly in any modern browser. No server, no build step, no dependencies.
 
 You'll need an **Anthropic API key** (`sk-ant-...`) to run live audits. Enter it in the persistent banner at the top — it stays in your browser only and is never logged or transmitted beyond the Anthropic API call.
 
