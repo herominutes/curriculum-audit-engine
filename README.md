@@ -4,9 +4,6 @@
 
 ---
 
-## Demo
-https://curriculum-audit-mvp.vercel.app
-
 ## What it does
 
 CurriculumOS lets teachers, curriculum directors, and school administrators upload any curriculum and receive a full AI-powered audit in under 60 seconds — benchmarked against what students at that grade level, in that geography, should know to be nationally competitive in the current year.
@@ -17,7 +14,7 @@ CurriculumOS lets teachers, curriculum directors, and school administrators uplo
 
 ## Live demo
 
-Open `curriculum_audit_senior.html` directly in any modern browser. No server, no build step, no dependencies.
+Open [`curriculum_audit_senior.html`](https://curriculum-audit-mvp.vercel.app) directly in any modern browser. No server, no build step, no dependencies.
 
 You'll need an **Anthropic API key** (`sk-ant-...`) to run live audits. Enter it in the persistent banner at the top — it stays in your browser only and is never logged or transmitted beyond the Anthropic API call.
 
