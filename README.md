@@ -12,6 +12,13 @@ CurriculumOS lets teachers, curriculum directors, and school administrators uplo
 
 ---
 
+## How an audit works
+
+```mermaid
+flowchart LR
+    A["Upload or paste<br/>a curriculum"] --> B["Set grade, subject,<br/>region, school type"] --> C["AI audit against<br/>benchmark estimates"] --> D["Score, red flags,<br/>missing topics"] --> E["Lesson stubs<br/>for each gap"] --> F["Re-audit and diff<br/>before vs after"]
+```
+
 ## Live demo
 
 Open https://curriculum-audit-mvp.vercel.app directly in any modern browser. No server, no build step, no dependencies.
@@ -25,6 +32,8 @@ To explore without an API key, hit **"Load demo curriculum"** on the New Audit s
 ## What works now vs. what is simulated
 
 This prototype is a single HTML file. It runs entirely in the browser. Some features make live API calls — others are populated with demo data to show what the full product looks like at institutional scale. Here is the exact breakdown so there is no ambiguity.
+
+<img src="assets/live-vs-demo.svg" width="100%" alt="Three columns: features that run live with an API key, features that show demo data, and export buttons that are not wired yet.">
 
 ### ✅ Fully functional with an Anthropic API key
 
@@ -281,6 +290,8 @@ This prototype proves the core thesis works: AI can audit a curriculum, score it
 What follows is the roadmap to turn CurriculumOS into a full operating system for curriculum quality — the platform that sits at the centre of how schools plan, iterate, and improve instruction at every level.
 
 ---
+
+<img src="assets/vision-roadmap.svg" width="100%" alt="Roadmap: today a single-file prototype, then four dashed phases that are not built: harden the core, institutional product, intelligence layer, and market expansion.">
 
 ### Phase 1 — Harden the core *(0–6 months)*
 

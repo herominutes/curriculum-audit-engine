@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 366" width="1200" height="366" role="img" aria-labelledby="t d" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<title id="t">CurriculumOS: live versus demo</title>
+<desc id="d">Three columns: features that make live AI calls, features filled with demo data, and export buttons not yet wired.</desc>
+<rect width="1200" height="366" rx="14" fill="#0f172a"/>
+<text x="600" y="40" text-anchor="middle" font-size="21" font-weight="700" fill="#f8fafc">What is live and what is demo data</text>
+<rect x="45" y="84" width="350" height="222" rx="12" fill="#111c33" stroke="#4ade80" stroke-width="2"/>
+<text x="61" y="114" font-size="15.5" fill="#4ade80" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="61" dy="0">Live with an API key</tspan></text>
+<line x1="61" y1="124" x2="379" y2="124" stroke="#4ade80" stroke-width="1" opacity="0.5"/>
+<text x="61" y="140" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="61" dy="0">• New audit: scored findings, benchmarks, action</tspan><tspan x="61" dy="17">  plan, lesson stubs</tspan></text>
+<text x="61" y="183" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="61" dy="0">• Before and after diff, inline and standalone</tspan></text>
+<text x="61" y="209" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="61" dy="0">• Lesson stub expand to a full unit plan</tspan></text>
+<text x="61" y="235" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="61" dy="0">• Session audit history</tspan></text>
+<rect x="425" y="84" width="350" height="222" rx="12" fill="#111c33" stroke="#fbbf24" stroke-width="2"/>
+<text x="441" y="114" font-size="15.5" fill="#fbbf24" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="441" dy="0">Demo data only</tspan></text>
+<line x1="441" y1="124" x2="759" y2="124" stroke="#fbbf24" stroke-width="1" opacity="0.5"/>
+<text x="441" y="140" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="441" dy="0">• Dashboard overview and curriculum cards</tspan></text>
+<text x="441" y="166" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="441" dy="0">• Standards drift alert</tspan></text>
+<text x="441" y="192" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="441" dy="0">• Benchmarks screen</tspan></text>
+<text x="441" y="218" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="441" dy="0">• Department view</tspan></text>
+<text x="441" y="244" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="441" dy="0">• Simulated historical trend</tspan></text>
+<rect x="441" y="260" width="137" height="24" rx="12" fill="none" stroke="#fbbf24" stroke-width="1.5"/><text x="452" y="277" font-size="12.5" font-weight="700" fill="#fbbf24">Shows the vision</text>
+<rect x="805" y="84" width="350" height="222" rx="12" fill="#111c33" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8 6"/>
+<text x="821" y="114" font-size="15.5" fill="#94a3b8" text-anchor="start" font-weight="700" xml:space="preserve"><tspan x="821" dy="0">Buttons not wired yet</tspan></text>
+<line x1="821" y1="124" x2="1139" y2="124" stroke="#94a3b8" stroke-width="1" opacity="0.5"/>
+<text x="821" y="140" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="821" dy="0">• Export PDF</tspan></text>
+<text x="821" y="166" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="821" dy="0">• Copy share link</tspan></text>
+<text x="821" y="192" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="821" dy="0">• Push to Notion</tspan></text>
+<text x="821" y="218" font-size="13.5" fill="#e2e8f0" text-anchor="start" xml:space="preserve"><tspan x="821" dy="0">• Export department report</tspan></text>
+<rect x="821" y="234" width="130" height="24" rx="12" fill="none" stroke="#94a3b8" stroke-width="1.5"/><text x="832" y="251" font-size="12.5" font-weight="700" fill="#94a3b8">Needs a backend</text>
+<text x="600" y="336" text-anchor="middle" font-size="13" fill="#94a3b8">Benchmarks are estimated from the AI's training knowledge, not from a live standards feed. The README says so, and so does this chart.</text>
+</svg>
